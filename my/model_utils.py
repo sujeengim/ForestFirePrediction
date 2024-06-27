@@ -4,7 +4,7 @@ from torchvision.datasets import ImageFolder
 from torch.utils.data import DataLoader
 from model import FireFinder
 
-device = "xpu" if torch.xpu.is_available() else "cpu"
+device = "cpu"
 print(f"using device: {device}")
 
 # Image transformations

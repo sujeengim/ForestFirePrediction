@@ -117,7 +117,7 @@ def train(model: FireFinder, trainer: Trainer, config: dict):
     plot_data_distribution(data_distribution(valid_dataloader.dataset, VALID_DIR))
     print(f"______________")
     start = time.time()
-    val_acc = trainer.fine_tune(train_dataloader, valid_dataloader)
+    val_acc = trainer.fine_tune(train_dataloader, valid_dataloader) #validation 정확도
     model_save_path = f"./models/model_acc_{val_acc}_device_{device}_lr_{trainer.lr}_epochs_{EPOCHS}.pt"
     torch.save(model.state_dict(), model_save_path)
 
