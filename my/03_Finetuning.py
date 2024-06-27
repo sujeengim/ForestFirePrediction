@@ -16,7 +16,7 @@ import torch
 # import intel_extension_for_pytorch
 import numpy as np
 import matplotlib.pyplot as plt
-import wandb
+# import wandb
 
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, Dataset
@@ -129,13 +129,15 @@ def train(model: FireFinder, trainer: Trainer, config: dict):
     print(f"Model saved to :{model_save_path}")
     print(f"Time elapsed: {time.time() - start} seconds.")
 
-
+#      #############################################
+#      #############################################
+#      #############################################
 def main(
     aug_data: bool = False,
     find_batch: bool = False,
     find_lr_rate: bool = False,
-    use_wandb: bool = True,
-    use_ipex=True,
+    # use_wandb: bool = True,
+    # use_ipex=True,
 ):
     """
     Main function to execute the fine-tuning process.
@@ -182,8 +184,8 @@ def main(
         best_lr = find_lr(model, optimizer, train_dataloader)
         del model, optimizer
         gc.collect()
-        if device == torch.device("xpu"):
-            torch.xpu.empty_cache()
+        # if device == torch.device("xpu"):
+        #     torch.xpu.empty_cache()
     print(f"Using learning rate: {best_lr}")
 
     model = FireFinder(simple=True, dropout=DROPOUT)
@@ -193,12 +195,15 @@ def main(
         lr=best_lr,
         epochs=EPOCHS,
         device=device,
-        use_wandb=use_wandb,
-        use_ipex=use_ipex,
+        # use_wandb=use_wandb,
+        # use_ipex=use_ipex,
     )
     train(model, trainer, config={"lr": best_lr, "batch_size": batch_size})
 
+    print('Done')
+
 if __name__ == "__main__":
     main(
-        aug_data=False, find_batch=False, find_lr_rate=False, use_wandb=True, use_ipex=False
+        aug_data=False, find_batch=False, find_lr_rate=False, 
+        # use_wandb=True, use_ipex=False
     )

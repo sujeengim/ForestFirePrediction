@@ -3,7 +3,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import torch
-import intel_extension_for_pytorch
 
 from torchvision.models import resnet18 as resnet18_model
 from torchvision.models.resnet import ResNet18_Weights
