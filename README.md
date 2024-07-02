@@ -1,3 +1,6 @@
+# 공부 기록
+https://www.notion.so/sujeen/ForestFirePrediction-56cb624d43c7461eba04ab0702104c80?pvs=4
+
 # Forest Fire Prediction
 
 ### Learning Objectives:
