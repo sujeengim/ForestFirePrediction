@@ -1,9 +1,10 @@
+# finetuning으로 colorEnhanced 학습하기 
 import os
 os.environ["WANDB_DIR"] = "./wandb_logs/"
 import pathlib
 import warnings
 import random
-import time
+import time 
 import gc
 from typing import Tuple
 #import glob
@@ -13,7 +14,7 @@ import os
 warnings.filterwarnings("ignore")
 
 import torch
-import intel_extension_for_pytorch
+# import intel_extension_for_pytorch
 import numpy as np
 import matplotlib.pyplot as plt
 import wandb
@@ -24,8 +25,8 @@ from torch.utils.data import DataLoader, Dataset
 from batch_finder import optimum_batch_size
 from config import set_seed, device
 from data_loader import (
-    TRAIN_DIR,
-    VALID_DIR,
+    TRAIN_DIR, #colorEnhanced/train
+    VALID_DIR, #colorEnhanced/val
     augment_and_save,
     data_distribution,
     imagenet_stats,
@@ -40,7 +41,7 @@ from lr_finder import LearningRateFinder
 from torch import optim
 
 # hyper params
-EPOCHS = 20 
+EPOCHS = 5
 DROPOUT = .6
 # LR would be changed if we are using a LR finder
 LR = 2.14e-4
@@ -135,7 +136,7 @@ def main(
     find_batch: bool = False,
     find_lr_rate: bool = False,
     use_wandb: bool = True,
-    use_ipex=True,
+    use_ipex=False,
 ):
     """
     Main function to execute the fine-tuning process.
@@ -149,6 +150,8 @@ def main(
 #    os.environ['WANDB_EXECUTABLE'] = '~/.conda/envs/PT/bin/python' 
 
     set_seed(42)
+
+    print(f"Device {device}")
     print(f"Train folder {TRAIN_DIR}")
     print(f"Validation folder {VALID_DIR}")
     print(f"Using epoch: {EPOCHS}")
@@ -159,11 +162,12 @@ def main(
     if aug_data:
         print("Augmenting training and validation datasets...")
         t1 = time.time()
+        #이미지데이터 증가⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️
         augment_and_save(TRAIN_DIR)
         augment_and_save(VALID_DIR)
         print(f"Done Augmenting in {time.time() - t1} seconds...")
 
-    model = FireFinder(simple=True, dropout=DROPOUT)
+    model = FireFinder(simple=True, dropout=DROPOUT) #resnet으로 fire/nofire 판단
     optimizer = optim.Adam(model.parameters(), lr=LR)
     if find_batch:
         print(f"Finding optimum batch size...")
@@ -182,8 +186,8 @@ def main(
         best_lr = find_lr(model, optimizer, train_dataloader)
         del model, optimizer
         gc.collect()
-        if device == torch.device("xpu"):
-            torch.xpu.empty_cache()
+        # if device == torch.device("xpu"):
+        #     torch.xpu.empty_cache()
     print(f"Using learning rate: {best_lr}")
 
     model = FireFinder(simple=True, dropout=DROPOUT)

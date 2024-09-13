@@ -1,10 +1,10 @@
 import torch
-import intel_extension_for_pytorch
+# import intel_extension_for_pytorch
 
 import torch.nn as nn
 from tqdm import tqdm
 import numpy as np
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression  
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.pipeline import make_pipeline
 

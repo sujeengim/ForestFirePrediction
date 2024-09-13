@@ -1,3 +1,5 @@
+#진짜 이미지로 프롬프트 주어 가짜 이미지 생성하기 
+
 import os
 import warnings
 
@@ -6,10 +8,13 @@ warnings.filterwarnings("ignore")
 import random
 import requests
 import torch
-import intel_extension_for_pytorch as ipex
+# import intel_extension_for_pytorch as ipex
 from PIL import Image
 from io import BytesIO
 from diffusers import StableDiffusionImg2ImgPipeline
+from diffusers import DiffusionPipeline
+
+
 import torch.nn as nn
 import time
 from typing import List, Dict, Tuple
@@ -23,7 +28,7 @@ class Img2ImgModel:
     def __init__(
         self,
         model_id_or_path: str,
-        device: str = "xpu",
+        device: str = "cuda:0",
         torch_dtype: torch.dtype = torch.float16,
         optimize: bool = True,
     ) -> None:
@@ -38,6 +43,9 @@ class Img2ImgModel:
         """
         self.device = device
         self.pipeline = self._load_pipeline(model_id_or_path, torch_dtype)
+        
+        
+        '''
         if optimize:
             start_time = time.time()
             print("Optimizing the model...")
@@ -47,6 +55,7 @@ class Img2ImgModel:
                     time.time() - start_time
                 )
             )
+        '''
 
     def _load_pipeline(
         self, model_id_or_path: str, torch_dtype: torch.dtype
@@ -62,13 +71,15 @@ class Img2ImgModel:
             StableDiffusionImg2ImgPipeline: The loaded pipeline.
         """
         print("Loading the model...")
+        # 🟥🟥🟥🟥🟥stable diffusion v1-5pipeline 설정
         pipeline = StableDiffusionImg2ImgPipeline.from_pretrained(
             model_id_or_path, torch_dtype=torch_dtype
         )
+        # pipeline = DiffusionPipeline.from_pretrained("stable-diffusion-v1-5/stable-diffusion-v1-5")
         pipeline = pipeline.to(self.device)
         print("Model loaded.")
         return pipeline
-
+    '''
     def _optimize_pipeline(
         self, pipeline: StableDiffusionImg2ImgPipeline
     ) -> StableDiffusionImg2ImgPipeline:
@@ -91,15 +102,18 @@ class Img2ImgModel:
                         dtype=pipeline.text_encoder.dtype,
                         inplace=True,
                     ),
-                )
-        return pipeline
+                 )
+    
+    
+    
 
     def optimize_pipeline(self) -> None:
         """
         Optimize the pipeline of the model.
         """
         self.pipeline = self._optimize_pipeline(self.pipeline)
-
+    '''
+    
     def get_image_from_url(self, url: str, path: str) -> Image.Image:
         """
         Get an image from a URL or from a local path if it exists.
@@ -112,8 +126,8 @@ class Img2ImgModel:
             Image.Image: The loaded image.
         """
         if os.path.exists(path):
-            img = Image.open(path).convert("RGB")
-        else:
+            img = Image.open(path).convert("RGB") #이미 존재하는 이미지면 리사이즈만 하고 리턴
+        else: #존재하지 않으면 저장 후 리사이즈&리턴
             response = requests.get(url)
             if response.status_code != 200:
                 raise Exception(
@@ -124,7 +138,8 @@ class Img2ImgModel:
                     f"URL does not point to an image. Content type: {response.headers['content-type']}"
                 )
             img = Image.open(BytesIO(response.content)).convert("RGB")
-            img.save(path)
+            #이미지 저장 🔶🔶🔶🔶🔶
+            img.save(path) 
         img = img.resize((768, 512))
         return img
 
@@ -139,15 +154,15 @@ class Img2ImgModel:
     def generate_images(
         self,
         prompt: str,
-        image_url: str,
+        image_url: str, #처음부터 주어진 진짜 위성이미지 10개 중 하나
         class_name: str,
         seed_image_identifier: str,
         variations: List[str],
-        num_images: int = 5,
+        num_images: int = 5, #만들 사진 수
         strength: float = 0.75,
         guidance_scale: float = 7.5,
         save_path: str = "output",
-        seed_path: str = "intput",
+        seed_path: str = "intput", 
     ) -> List[Image.Image]:
         """
         Generate images based on the provided prompt and variations.
@@ -167,10 +182,10 @@ class Img2ImgModel:
         Returns:
             List[Image.Image]: The list of generated images.
         """
-        input_image_path = f"{seed_path}/{seed_image_identifier}.png"
-        init_image = self.get_image_from_url(image_url, input_image_path)
+        input_image_path = f"{seed_path}/{seed_image_identifier}.png" #input/확장자 없는 이미지 파일 이름 
+        init_image = self.get_image_from_url(image_url, input_image_path) #이미지 리사이즈 후 저장
         images = []
-        for i in range(num_images):
+        for i in range(num_images): #5번 반복, 한 이미지에 대해 5가지vari 적용 => 결과 fire25개 nofire25개
             variation = variations[i % len(variations)]
             final_prompt = f"{prompt} {variation}"
             image = self.pipeline(
@@ -179,21 +194,24 @@ class Img2ImgModel:
                 strength=strength,
                 guidance_scale=guidance_scale,
             ).images
-            output_image_path = os.path.join(
-                save_path,
+            output_image_path = os.path.join(#"output/fire or nofire"+확장자없는 파일이름~~.png
+                save_path, 
                 f"{seed_image_identifier}_{'_'.join(variation.split())}_{i}.png",
             )
+            #이미지 저장🔶🔶🔶🔶🔶
             image[0].save(output_image_path)
             images.append(image)
         return images
 
 
 if __name__ == "__main__":
-    model_id = "runwayml/stable-diffusion-v1-5"
+    
+    # model_id = "runwayml/stable-diffusion-v1-5"
+    model_id = 'stable-diffusion-v1-5/stable-diffusion-v1-5'
     base_prompt = (
         "A close image to this original satellite image with slight change in location"
     )
-    fire_variations = [
+    fire_variations = [#어둡고 연기 6가지
         "early morning with a wild fire",
         "late afternoon",
         "mid-day",
@@ -201,7 +219,7 @@ if __name__ == "__main__":
         "smoky conditions",
         "visible fire lines",
     ]
-    no_fire_variations = [
+    no_fire_variations = [#밝고 깨끗 7가지
         "early morning with clear skies",
         "no signs of fire",
         "night",
@@ -211,7 +229,27 @@ if __name__ == "__main__":
         "with sparse vegetation",
     ]
 
-    image_urls = {
+
+    image_urls = { #test image
+        'fire' : [ #sight
+            'https://drive.google.com/file/d/1JQOkAapWfgjbpPVKvkNAXxNxZQw-suAA/view?usp=drive_link',
+            './testImage/midCloudSky.jpg',
+            './testImage/field.jpg',
+            './testImage/sea.jpg',
+            './testImage/mapinkskhu.png',
+        ],
+        'nofire' : [ #object
+            './testImage/doll.jpg',
+            './testImage/face.jpg',
+            './testImage/frenchToast.jpg',
+            './testImage/stake.jpg',
+            './testImage/jesusCross.png',
+
+        ]
+    }
+
+    '''
+    image_urls = { #미국정부출처에서 10개 이미지 가져왔다는게 이건가봄 real 근데 넘 가짜같이 생김
         "fire": [
             "https://github.com/intelsoftware/ForestFirePrediction/blob/main/data/real_USGS_NAIP/train/Fire/m_3912105_sw_10_h_20160713.png?raw=true",
             "https://github.com/intelsoftware/ForestFirePrediction/blob/main/data/real_USGS_NAIP/train/Fire/m_3912113_sw_10_h_20160713.png?raw=true",
@@ -227,32 +265,34 @@ if __name__ == "__main__":
             "https://github.com/intelsoftware/ForestFirePrediction/blob/main/data/real_USGS_NAIP/train/NoFire/m_4012241_se_10_h_20160712.png?raw=true",
         ],
     }
-
-    model = Img2ImgModel(model_id, device="xpu")
-    num_images = 5
+    '''
+    # model = Img2ImgModel(model_id, device="xpu")
+    model = Img2ImgModel(model_id_or_path=model_id, device="cuda")
+    num_images = 3
     gen_img_count = 0
 
     try:
-        start_time = time.time()
-        for class_name, urls in image_urls.items():
-            for url in urls:
-                seed_image_identifier = os.path.basename(url).split(".")[0]
-                input_dir = f"./input/{class_name}"
-                output_dir = f"./output/{class_name}"
+        start_time = time.time() #시간측정
+        for class_name, urls in image_urls.items(): # (fire, [https://github~~, ~~, ...])
+            for url in urls: #https://github~~
+                seed_image_identifier = os.path.basename(url).split(".")[0] # 확장자 없는 이미지 파일 이름 
+                input_dir = f"./input/{class_name}" #/input/fire or nofire
+                output_dir = f"./output/{class_name}"#/output/fire or nofire
                 os.makedirs(input_dir, exist_ok=True)
                 os.makedirs(output_dir, exist_ok=True)
                 variations = (
                     fire_variations if class_name == "fire" else no_fire_variations
                 )
                 model.generate_images(
-                    base_prompt,
-                    url,
-                    class_name,
-                    seed_image_identifier,
+                    prompt=base_prompt,
+                    image_url=url,
+                    class_name=class_name,
+                    seed_image_identifier=seed_image_identifier,
                     variations=variations,
+                    num_images=num_images,
                     save_path=output_dir,
                     seed_path=input_dir,
-                    num_images=num_images,
+                    
                 )
                 gen_img_count += num_images
     except KeyboardInterrupt:

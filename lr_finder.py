@@ -1,11 +1,11 @@
 import torch
-import intel_extension_for_pytorch
+# import intel_extension_for_pytorch
 from tqdm import tqdm
 import numpy as np
 from tabulate import tabulate
 #import wandb
 
-
+ 
 class LearningRateFinder:
     def __init__(
         self,

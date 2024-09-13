@@ -1,5 +1,5 @@
 import torch
-import intel_extension_for_pytorch as ipex
+# import intel_extension_for_pytorch as ipex
 import os
 from tqdm import tqdm
 import time
@@ -16,13 +16,13 @@ class Trainer:
         optimizer,
         lr,
         epochs=10,
-        precision="fp32",
+        precision="fp32", 
         device=device,
-        #use_wandb=False,
+        use_wandb=False,
         use_ipex=False,
     ):
         self.use_ipex = use_ipex
-        #self.use_wandb = use_wandb
+        self.use_wandb = use_wandb
         self.device = device
         self.model = model.to(self.device)
         self.loss_fn = torch.nn.CrossEntropyLoss()
@@ -46,13 +46,13 @@ class Trainer:
         return loss, correct, total
         
 #*************************** Exercise 2 ***************************************
-    def _to_ipex(self, dtype=torch.float32):
-        """convert model memory format to channels_last to IPEX format."""
-        self.model.train()
-        self.model = self.model.to(memory_format=torch.channels_last)
-        self.model, self.optimizer = ipex.optimize(
-            self.model, optimizer=self.optimizer, dtype=torch.float32
-        )
+    # def _to_ipex(self, dtype=torch.float32):
+    #     """convert model memory format to channels_last to IPEX format."""
+    #     self.model.train()
+    #     self.model = self.model.to(memory_format=torch.channels_last)
+    #     self.model, self.optimizer = ipex.optimize(
+    #         self.model, optimizer=self.optimizer, dtype=torch.float32
+    #     )
 #******************************************************************************
     
     def train(self, train_dataloader):
@@ -105,8 +105,8 @@ class Trainer:
         return total_loss / len(valid_dataloader), acc
 
     def fine_tune(self, train_dataloader, valid_dataloader):
-        if self.use_ipex:
-            self._to_ipex()
+        # if self.use_ipex:
+        #     self._to_ipex()
         # if self.use_wandb:
         #     import os
         #     print(os.environ["WANDB_DIR"])

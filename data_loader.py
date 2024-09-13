@@ -3,7 +3,7 @@ from config import device
 from config import seed_everything
 
 import pathlib
-import plotext as tplt
+import plotext as tplt 
 
 from torchvision import transforms
 import matplotlib.pyplot as plt
@@ -39,29 +39,30 @@ img_transforms = {
     ),
 }
 
-
-def augment_and_save(path, target_number=1000):
+#✅🟥🟥🔶
+def augment_and_save(path, target_number=1): #02_에서 생성된 coloren로
     """augment dataset if total number per class is less than 1000 and save to data dir."""
     subfolders = [f.path for f in os.scandir(path) if f.is_dir()]
     for subfolder in subfolders:
         images = fnmatch.filter(os.listdir(subfolder), "*.png")
-        augmentations_per_image = max(target_number // len(images), 1)
+        augmentations_per_image = max(target_number // len(images), 1) #target-num 보다 image수가 적을 경우 aug
         augmentations = Compose(
             [
-                HorizontalFlip(),
-                VerticalFlip(),
-                RandomRotate90(),
+                HorizontalFlip(),#좌우
+                VerticalFlip(),#상하
+                RandomRotate90(),#랜덤방향90도회전
             ]
+            # 이게 무슨의미가 잇을갸?
         )
         for image in images:
             image_path = os.path.join(subfolder, image)
             img = cv2.imread(image_path)
             for i in range(augmentations_per_image):
                 augmented = augmentations(image=img)
-                new_filename = os.path.splitext(image)[0] + f"_{i}.png"
-                cv2.imwrite(
-                    os.path.join(subfolder, new_filename),
-                    augmented["image"],
+                new_filename = os.path.splitext(image)[0] + f"_{i}.png" #확장자 전까지의 파일이름 + "_{i}.png"
+                cv2.imwrite( #저장
+                    os.path.join(subfolder, new_filename), #저장할 파일 경로
+                    augmented["image"],#저장할 이미지 
                 )
 
 

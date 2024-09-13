@@ -3,7 +3,7 @@ import torch.nn as nn
 import torchvision.models as models
 
 
-class FireFinder(nn.Module):
+class FireFinder(nn.Module): 
     """
     A model to classify aerial images that could potentially Fire from satellite images
     We are using a pretrained resnet backbone model
@@ -20,7 +20,7 @@ class FireFinder(nn.Module):
         simple=True,
         dropout=0.4,
         n_classes=2,
-        feature_extractor=False,
+        feature_extractor=False, #true false 둘다 해보기 
     ):
         super(FireFinder, self).__init__()
         backbones = {
