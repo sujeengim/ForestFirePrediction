@@ -209,7 +209,8 @@ if __name__ == "__main__":
     # model_id = "runwayml/stable-diffusion-v1-5"
     model_id = 'stable-diffusion-v1-5/stable-diffusion-v1-5'
     base_prompt = (
-        "A close image to this original satellite image with slight change in location"
+        # "A close image to this original satellite image with slight change in location"
+        'A close image to this image with slight change freely'
     )
     fire_variations = [#어둡고 연기 6가지
         "early morning with a wild fire",
@@ -241,10 +242,10 @@ if __name__ == "__main__":
         ],
         'nofire' : [ #object
             'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/doll.jpg?raw=true',
-            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/friedFood.jpg?raw=true',
-            './testImage/frenchToast.jpg',
+            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/face.jpg?raw=true',
+            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/frenchToast.jpg?raw=true',
             'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/stake.jpg?raw=true',
-            './testImage/jesusCross.png',
+            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/textFlower.jpg?raw=true',
 
         ]
     }
@@ -277,8 +278,11 @@ if __name__ == "__main__":
         for class_name, urls in image_urls.items(): # (fire, [https://github~~, ~~, ...])
             for url in urls: #https://github~~
                 seed_image_identifier = os.path.basename(url).split(".")[0] # 확장자 없는 이미지 파일 이름 
-                input_dir = f"./input/{class_name}" #/input/fire or nofire
-                output_dir = f"./output/{class_name}"#/output/fire or nofire
+                # 😶‍🌫️😶‍🌫️😶‍🌫️😶‍🌫️😶‍🌫️😶‍🌫️🩳🩳🩳🩳🩳🩳🩳changge
+                input_dir = f"./testImage/input/{class_name}"
+                output_dir = f"./testImage/output/{class_name}"
+                # input_dir = f"./input/{class_name}" #/input/fire or nofire
+                # output_dir = f"./output/{class_name}"#/output/fire or nofire
                 os.makedirs(input_dir, exist_ok=True)
                 os.makedirs(output_dir, exist_ok=True)
                 variations = (
