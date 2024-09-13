@@ -232,17 +232,18 @@ if __name__ == "__main__":
 
     image_urls = { #test image
         'fire' : [ #sight
-            'https://drive.google.com/file/d/1JQOkAapWfgjbpPVKvkNAXxNxZQw-suAA/view?usp=drive_link',
-            './testImage/midCloudSky.jpg',
-            './testImage/field.jpg',
-            './testImage/sea.jpg',
-            './testImage/mapinkskhu.png',
+            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/afternoonCloudSky.jpg?raw=true',
+            
+            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/midCloudSky.jpg?raw=true',
+            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/field.jpg?raw=true',
+            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/sea.jpg?raw=true',
+            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/mapinskhu.png?raw=true',
         ],
         'nofire' : [ #object
-            './testImage/doll.jpg',
-            './testImage/face.jpg',
+            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/doll.jpg?raw=true',
+            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/friedFood.jpg?raw=true',
             './testImage/frenchToast.jpg',
-            './testImage/stake.jpg',
+            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/stake.jpg?raw=true',
             './testImage/jesusCross.png',
 
         ]
