@@ -210,7 +210,7 @@ if __name__ == "__main__":
     model_id = 'stable-diffusion-v1-5/stable-diffusion-v1-5'
     base_prompt = (
         # "A close image to this original satellite image with slight change in location"
-        'A close image to this image with slight change freely'
+        'A close image to this image with slight change'
     )
     fire_variations = [#어둡고 연기 6가지
         "early morning with a wild fire",
@@ -234,7 +234,6 @@ if __name__ == "__main__":
     image_urls = { #test image
         'fire' : [ #sight
             'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/afternoonCloudSky.jpg?raw=true',
-            
             'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/midCloudSky.jpg?raw=true',
             'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/field.jpg?raw=true',
             'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/sea.jpg?raw=true',
@@ -245,7 +244,7 @@ if __name__ == "__main__":
             'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/face.jpg?raw=true',
             'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/frenchToast.jpg?raw=true',
             'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/stake.jpg?raw=true',
-            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/textFlower.jpg?raw=true',
+            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/life4cut.jpg?raw=true',
 
         ]
     }
