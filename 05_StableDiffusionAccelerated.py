@@ -213,18 +213,18 @@ if __name__ == "__main__":
         'A close image to this image with slight change'
     )
     fire_variations = [#어둡고 연기 6가지
-        "early morning with a wild fire",
-        "late afternoon",
-        "mid-day",
-        "night with wild fire",
+        "dark",
+        "sunset",
+        "smoke",
+        "wild fire",
         "smoky conditions",
         "visible fire lines",
     ]
     no_fire_variations = [#밝고 깨끗 7가지
-        "early morning with clear skies",
-        "no signs of fire",
-        "night",
-        "late afternoon with clear skies",
+        "flower",
+        "butterfly",
+        "water",
+        "fresh",
         "mid-day with clear skies",
         "with dense vegetation",
         "with sparse vegetation",
