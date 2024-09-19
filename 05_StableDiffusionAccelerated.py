@@ -72,47 +72,49 @@ class Img2ImgModel:
         """
         print("Loading the model...")
         # 🟥🟥🟥🟥🟥stable diffusion v1-5pipeline 설정
-        pipeline = StableDiffusionImg2ImgPipeline.from_pretrained(
+        pipeline = StableDiffusionImg2ImgPipeline.from_pretrained(  #사전학습된 transformer모델 로드
             model_id_or_path, torch_dtype=torch_dtype
         )
         # pipeline = DiffusionPipeline.from_pretrained("stable-diffusion-v1-5/stable-diffusion-v1-5")
         pipeline = pipeline.to(self.device)
         print("Model loaded.")
         return pipeline
-    '''
-    def _optimize_pipeline(
-        self, pipeline: StableDiffusionImg2ImgPipeline
-    ) -> StableDiffusionImg2ImgPipeline:
-        """
-        Optimize the pipeline of the model.
+    
 
-        Args:
-            pipeline (StableDiffusionImg2ImgPipeline): The pipeline to optimize.
-
-        Returns:
-            StableDiffusionImg2ImgPipeline: The optimized pipeline.
-        """
-        for attr in dir(pipeline):
-            if isinstance(getattr(pipeline, attr), nn.Module):
-                setattr(
-                    pipeline,
-                    attr,
-                    ipex.optimize(
-                        getattr(pipeline, attr).eval(),
-                        dtype=pipeline.text_encoder.dtype,
-                        inplace=True,
-                    ),
-                 )
+    def _optimize_pipeline(self, pipeline: StableDiffusionImg2ImgPipeline) -> StableDiffusionImg2ImgPipeline:
+            """
+            Optimize the pipeline of the model.
     
+            Args:
+                pipeline (StableDiffusionImg2ImgPipeline): The pipeline to optimize.
     
-    
+            Returns:
+                StableDiffusionImg2ImgPipeline: The optimized pipeline.
+            """
+            '''
+            for attr in dir(pipeline):
+                try:
+                    if isinstance(getattr(pipeline, attr), nn.Module):
+                        setattr(
+                            pipeline,
+                            attr,
+                            ipex.optimize(
+                                getattr(pipeline, attr).eval(),
+                                dtype=pipeline.text_encoder.dtype,
+                                inplace=True,
+                            ),
+                        )
+                except AttributeError:
+                    pass
+            '''
+            return pipeline
 
     def optimize_pipeline(self) -> None:
         """
         Optimize the pipeline of the model.
         """
         self.pipeline = self._optimize_pipeline(self.pipeline)
-    '''
+    
     
     def get_image_from_url(self, url: str, path: str) -> Image.Image:
         """
@@ -140,10 +142,10 @@ class Img2ImgModel:
             img = Image.open(BytesIO(response.content)).convert("RGB")
             #이미지 저장 🔶🔶🔶🔶🔶
             img.save(path) 
-        img = img.resize((768, 512))
+        img = img.resize((768, 512)) #사이즈 변경 왜하는걸까?
         return img
 
-    @staticmethod
+    @staticmethod #딱히 사용안됨
     def random_sublist(lst):
         sublist = []
         for _ in range(random.randint(1, len(lst))):
@@ -207,27 +209,30 @@ class Img2ImgModel:
 if __name__ == "__main__":
     
     # model_id = "runwayml/stable-diffusion-v1-5"
-    model_id = 'stable-diffusion-v1-5/stable-diffusion-v1-5'
+    # model_id = 'stable-diffusion-v1-5/stable-diffusion-v1-5'
+    model_id = 'sd-legacy/stable-diffusion-v1-5'
     base_prompt = (
         # "A close image to this original satellite image with slight change in location"
-        'A close image to this image with slight change'
+        # 'A close image to this image with slight change'
+        'Create realistic photos that are not much different from the current ones.'
     )
+    print("base prompt: ",base_prompt)
     fire_variations = [#어둡고 연기 6가지
-        "dark",
+        "devil",
+        "smoky conditions",
+        "black and gray","dark",
         "sunset",
         "smoke",
-        "wild fire",
-        "smoky conditions",
-        "visible fire lines",
+        
     ]
     no_fire_variations = [#밝고 깨끗 7가지
-        "flower",
+        "skyblue and pink",
+        "angel",
+        "with sparse vegetation","flower",
         "butterfly",
         "water",
         "fresh",
-        "mid-day with clear skies",
-        "with dense vegetation",
-        "with sparse vegetation",
+        
     ]
 
 
@@ -240,11 +245,16 @@ if __name__ == "__main__":
             'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/mapinskhu.png?raw=true',
         ],
         'nofire' : [ #object
-            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/doll.jpg?raw=true',
-            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/face.jpg?raw=true',
-            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/frenchToast.jpg?raw=true',
-            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/stake.jpg?raw=true',
-            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/life4cut.jpg?raw=true',
+            # 'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/doll.jpg?raw=true',
+            # 'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/face.jpg?raw=true',
+            # 'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/frenchToast.jpg?raw=true',
+            # 'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/stake.jpg?raw=true',
+            # 'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/life4cut.jpg?raw=true',
+            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/afternoonCloudSky.jpg?raw=true',
+            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/midCloudSky.jpg?raw=true',
+            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/field.jpg?raw=true',
+            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/sea.jpg?raw=true',
+            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/mapinskhu.png?raw=true',
 
         ]
     }
@@ -277,7 +287,7 @@ if __name__ == "__main__":
         for class_name, urls in image_urls.items(): # (fire, [https://github~~, ~~, ...])
             for url in urls: #https://github~~
                 seed_image_identifier = os.path.basename(url).split(".")[0] # 확장자 없는 이미지 파일 이름 
-                # 😶‍🌫️😶‍🌫️😶‍🌫️😶‍🌫️😶‍🌫️😶‍🌫️🩳🩳🩳🩳🩳🩳🩳changge
+                # 🟥🟥🟥🟥🟥🟥🟥changge
                 input_dir = f"./testImage/input/{class_name}"
                 output_dir = f"./testImage/output/{class_name}"
                 # input_dir = f"./input/{class_name}" #/input/fire or nofire

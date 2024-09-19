@@ -11,7 +11,7 @@ class FireFinder(nn.Module):
     0 - no Fire
     1 - Fire
 
-    We currently use the resnet50 model as a backbone
+    We currently use the resnet50 model as a backbone ??18 사용중이자나
     """
 
     def __init__(
@@ -33,24 +33,24 @@ class FireFinder(nn.Module):
             ),
         }
         try:
-            self.network = backbones[backbone](pretrained=True)
+            self.network = backbones[backbone](pretrained=True) #resnet 모델을 가리킴
             if backbone == "efficientnet_b0":
-                self.network.classifier[1] = nn.Linear(1280, n_classes)
+                self.network.classifier[1] = nn.Linear(1280, n_classes) #입력1280개 이미지, 결과2개(f, nf)
             else:
                 self.network.fc = nn.Linear(self.network.fc.in_features, n_classes)
         except KeyError:
             raise ValueError(f"Backbone model '{backbone}' not found")
 
-        if feature_extractor:
-            print("Running in future extractor mode.")
+        if feature_extractor: #모하는거지?
+            print("Running in feature extractor mode.")
             for param in self.network.parameters():
-                param.requires_grad = False
+                param.requires_grad = False #기울기계산 안함->학습 안시킴
         else:
             print("Running in Finetuning mode.")
 
         for m, p in zip(self.network.modules(), self.network.parameters()):
             if isinstance(m, nn.BatchNorm2d):
-                p.requires_grad = False
+                p.requires_grad = False #학습 안시킴
 
         if not simple and backbone != "efficientnet_b0":
             fc = nn.Sequential(
@@ -61,7 +61,7 @@ class FireFinder(nn.Module):
             )
             for layer in fc.modules():
                 if isinstance(layer, nn.Linear):
-                    nn.init.xavier_uniform_(layer.weight)
+                    nn.init.xavier_uniform_(layer.weight) #가중치 초기화
             self.network.fc = fc
 
     def forward(self, x_batch):

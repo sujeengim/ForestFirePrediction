@@ -19,7 +19,7 @@ TRAIN_DIR = data_dir / "train"
 VALID_DIR = data_dir / "val"
 
 
-img_transforms = {
+img_transforms = { #왜하는거지?
     "train": transforms.Compose(
         [
             transforms.Resize((224, 224)),
