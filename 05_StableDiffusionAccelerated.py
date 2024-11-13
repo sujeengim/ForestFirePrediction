@@ -12,7 +12,7 @@ import torch
 from PIL import Image
 from io import BytesIO
 from diffusers import StableDiffusionImg2ImgPipeline
-from diffusers import DiffusionPipeline
+# from diffusers import DiffusionPipeline
 
 
 import torch.nn as nn
@@ -74,7 +74,10 @@ class Img2ImgModel:
         # 🟥🟥🟥🟥🟥stable diffusion v1-5pipeline 설정
         pipeline = StableDiffusionImg2ImgPipeline.from_pretrained(  #사전학습된 transformer모델 로드
             model_id_or_path, torch_dtype=torch_dtype
-        )
+        ) 
+        # https://github.com/huggingface/diffusers#text-to-image-generation-with-stable-diffusion
+        # https://huggingface.co/docs/diffusers/api/pipelines/stable_diffusion/img2img
+        # 텍스트에서 이미지를 생성하려면 from_pretrained를 사용하여 사전 훈련된 확산 모델을 로드한다. 
         # pipeline = DiffusionPipeline.from_pretrained("stable-diffusion-v1-5/stable-diffusion-v1-5")
         pipeline = pipeline.to(self.device)
         print("Model loaded.")
@@ -187,7 +190,10 @@ class Img2ImgModel:
         input_image_path = f"{seed_path}/{seed_image_identifier}.png" #input/확장자 없는 이미지 파일 이름 
         init_image = self.get_image_from_url(image_url, input_image_path) #이미지 리사이즈 후 저장
         images = []
+        cnt = 0
         for i in range(num_images): #5번 반복, 한 이미지에 대해 5가지vari 적용 => 결과 fire25개 nofire25개
+            print(cnt)
+            cnt+=1
             variation = variations[i % len(variations)]
             final_prompt = f"{prompt} {variation}"
             image = self.pipeline(
@@ -209,58 +215,74 @@ class Img2ImgModel:
 if __name__ == "__main__":
     
     # model_id = "runwayml/stable-diffusion-v1-5"
-    # model_id = 'stable-diffusion-v1-5/stable-diffusion-v1-5'
-    model_id = 'sd-legacy/stable-diffusion-v1-5'
+    model_id = 'stable-diffusion-v1-5/stable-diffusion-v1-5'
+    # model_id = 'sd-legacy/stable-diffusion-v1-5'
     base_prompt = (
-        # "A close image to this original satellite image with slight change in location"
+        "A close image to this original satellite image with slight change in location" #to this original satellite image 이렇게 인풋이미지에 대한 정보를 주는구나
         # 'A close image to this image with slight change'
-        'Create realistic photos that are not much different from the current ones.'
+        # 'Create realistic photos that are not much different from the current ones.'
+        # 'A close image to this original aerial image with slight change in location'
     )
     print("base prompt: ",base_prompt)
-    fire_variations = [#어둡고 연기 6가지
-        "devil",
+
+    fire_variations = [
+        "early morning with a wild fire",
+        "late afternoon",
+        "mid-day",
+        "night with wild fire",
         "smoky conditions",
-        "black and gray","dark",
-        "sunset",
-        "smoke",
-        
+        "visible fire lines",
     ]
-    no_fire_variations = [#밝고 깨끗 7가지
-        "skyblue and pink",
-        "angel",
-        "with sparse vegetation","flower",
-        "butterfly",
-        "water",
-        "fresh",
-        
+    no_fire_variations = [
+        "early morning with clear skies",
+        "no signs of fire",
+        "night",
+        "late afternoon with clear skies",
+        "mid-day with clear skies",
+        "with dense vegetation",
+        "with sparse vegetation",
     ]
 
+    # fire_variations = [#어둡고 연기 6가지
+    #     "devil",
+    #     "smoky conditions",
+    #     "black and gray","dark",
+    #     "sunset",
+    #     "smoke",
+        
+    # ]
+    # no_fire_variations = [#밝고 깨끗 7가지
+    #     "skyblue and pink",
+    #     "angel",
+    #     "with sparse vegetation","flower",
+    #     "butterfly",
+    #     "water",
+    #     "fresh",
+        
+    # ]
 
-    image_urls = { #test image
-        'fire' : [ #sight
-            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/afternoonCloudSky.jpg?raw=true',
-            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/midCloudSky.jpg?raw=true',
-            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/field.jpg?raw=true',
-            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/sea.jpg?raw=true',
-            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/mapinskhu.png?raw=true',
-        ],
-        'nofire' : [ #object
-            # 'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/doll.jpg?raw=true',
-            # 'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/face.jpg?raw=true',
-            # 'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/frenchToast.jpg?raw=true',
-            # 'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/stake.jpg?raw=true',
-            # 'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/life4cut.jpg?raw=true',
-            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/afternoonCloudSky.jpg?raw=true',
-            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/midCloudSky.jpg?raw=true',
-            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/field.jpg?raw=true',
-            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/sea.jpg?raw=true',
-            'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/mapinskhu.png?raw=true',
 
-        ]
-    }
+    #test image
+    # image_urls = { 
+    #     'fire' : [ 
+    #         'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/afternoonCloudSky.jpg?raw=true',
+    #         'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/midCloudSky.jpg?raw=true',
+    #         'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/field.jpg?raw=true',
+    #         'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/sea.jpg?raw=true',
+    #         'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/mapinskhu.png?raw=true',
+    #     ],
+    #     'nofire' : [ 
+    #         'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/afternoonCloudSky.jpg?raw=true',
+    #         'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/midCloudSky.jpg?raw=true',
+    #         'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/field.jpg?raw=true',
+    #         'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/sea.jpg?raw=true',
+    #         'https://github.com/sujeengim/ForestFirePrediction/blob/main/testImage/mapinskhu.png?raw=true',
+
+    #     ]
+    # }
 
     '''
-    image_urls = { #미국정부출처에서 10개 이미지 가져왔다는게 이건가봄 real 근데 넘 가짜같이 생김
+    image_urls = { #미국정부출처에서 10개 이미지 가져왔다는게 이건가봄 real 
         "fire": [
             "https://github.com/intelsoftware/ForestFirePrediction/blob/main/data/real_USGS_NAIP/train/Fire/m_3912105_sw_10_h_20160713.png?raw=true",
             "https://github.com/intelsoftware/ForestFirePrediction/blob/main/data/real_USGS_NAIP/train/Fire/m_3912113_sw_10_h_20160713.png?raw=true",
@@ -275,11 +297,20 @@ if __name__ == "__main__":
             "https://github.com/intelsoftware/ForestFirePrediction/blob/main/data/real_USGS_NAIP/train/NoFire/m_3912343_se_10_h_20160529.png?raw=true",
             "https://github.com/intelsoftware/ForestFirePrediction/blob/main/data/real_USGS_NAIP/train/NoFire/m_4012241_se_10_h_20160712.png?raw=true",
         ],
+    }'''
+
+    fire_dir = 'C:\\Users\\user\\Desktop\\ksj\\ForestFirePrediction\\input\\fire'
+    nofire_dir = 'C:\\Users\\user\\Desktop\\ksj\\ForestFirePrediction\\input\\no_fire'
+
+    image_urls = {
+        "fire" : os.listdir(fire_dir), # 형태: [~.png, ~.jpg, ~.py ~]등 디렉의 파일 모두 리스트에 담아 가져옴
+        "no_fire" : os.listdir(nofire_dir)
     }
-    '''
+    
     # model = Img2ImgModel(model_id, device="xpu")
     model = Img2ImgModel(model_id_or_path=model_id, device="cuda")
-    num_images = 3
+    print("Device; ",model.device)
+    num_images = 5
     gen_img_count = 0
 
     try:
@@ -288,10 +319,10 @@ if __name__ == "__main__":
             for url in urls: #https://github~~
                 seed_image_identifier = os.path.basename(url).split(".")[0] # 확장자 없는 이미지 파일 이름 
                 # 🟥🟥🟥🟥🟥🟥🟥changge
-                input_dir = f"./testImage/input/{class_name}"
-                output_dir = f"./testImage/output/{class_name}"
-                # input_dir = f"./input/{class_name}" #/input/fire or nofire
-                # output_dir = f"./output/{class_name}"#/output/fire or nofire
+                # input_dir = f"./testImage/input/{class_name}"
+                # output_dir = f"./testImage/output/{class_name}"
+                input_dir = f"./input/{class_name}" #/input/fire or nofire
+                output_dir = f"./output/{class_name}"#/output/fire or nofire
                 os.makedirs(input_dir, exist_ok=True)
                 os.makedirs(output_dir, exist_ok=True)
                 variations = (
