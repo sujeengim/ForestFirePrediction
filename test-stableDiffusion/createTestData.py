@@ -1,5 +1,8 @@
 '''
 프롬프트 테스트할 이미지를 생성하는 파일
+인풋 디렉토리: jm-data/train & val
+아웃풋 디렉토리: jm-test-data/train & val
+
 '''
 import os
 from PIL import Image

@@ -1,0 +1,53 @@
+{
+    "os": "Windows-11-10.0.22631-SP0",
+    "python": "3.12.5",
+    "heartbeatAt": "2024-11-14T19:24:32.118010",
+    "startedAt": "2024-11-14T19:24:31.481448",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "c:\\Users\\user\\Desktop\\ksj\\ForestFirePrediction\\testTraining.py",
+    "codePathLocal": "testTraining.py",
+    "codePath": "testTraining.py",
+    "git": {
+        "remote": "https://github.com/sujeengim/ForestFirePrediction.git",
+        "commit": "ac2566d4db58423f4f14ee0e9d4e7b35ffe329c9"
+    },
+    "email": "ksj030120@gmail.com",
+    "root": "C:/Users/user/Desktop/ksj/ForestFirePrediction",
+    "host": "DESKTOP-JHQ5H3F",
+    "username": "user",
+    "executable": "c:\\Users\\user\\Desktop\\ksj\\ForestFirePrediction\\ori2\\Scripts\\python.exe",
+    "cpu_count": 6,
+    "cpu_count_logical": 12,
+    "cpu_freq": {
+        "current": 2712.0,
+        "min": 0.0,
+        "max": 2712.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2712.0,
+            "min": 0.0,
+            "max": 2712.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 930.7040977478027,
+            "used": 239.6433448791504
+        }
+    },
+    "gpu": "NVIDIA GeForce RTX 4060 Ti",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce RTX 4060 Ti",
+            "memory_total": 17175674880
+        }
+    ],
+    "memory": {
+        "total": 63.788063049316406
+    }
+}

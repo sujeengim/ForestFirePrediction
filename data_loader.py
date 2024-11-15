@@ -14,12 +14,12 @@ import cv2
 from albumentations import HorizontalFlip, VerticalFlip, RandomRotate90, Compose
 
 imagenet_stats = [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]
-data_dir = pathlib.Path("./data/colorEnhanced/")
+data_dir = pathlib.Path("test-stableDiffusion/jm-test-augdata/")
 TRAIN_DIR = data_dir / "train"
 VALID_DIR = data_dir / "val"
 
 
-img_transforms = { #왜하는거지?
+img_transforms = { 
     "train": transforms.Compose(
         [
             transforms.Resize((224, 224)),
@@ -44,7 +44,7 @@ def augment_and_save(path, target_number=1): #02_에서 생성된 coloren로
     """augment dataset if total number per class is less than 1000 and save to data dir."""
     subfolders = [f.path for f in os.scandir(path) if f.is_dir()]
     for subfolder in subfolders:
-        images = fnmatch.filter(os.listdir(subfolder), "*.png")
+        images = fnmatch.filter(os.listdir(subfolder), "*.jpg")
         augmentations_per_image = max(target_number // len(images), 1) #target-num 보다 image수가 적을 경우 aug
         augmentations = Compose(
             [
@@ -59,7 +59,7 @@ def augment_and_save(path, target_number=1): #02_에서 생성된 coloren로
             img = cv2.imread(image_path)
             for i in range(augmentations_per_image):
                 augmented = augmentations(image=img)
-                new_filename = os.path.splitext(image)[0] + f"_{i}.png" #확장자 전까지의 파일이름 + "_{i}.png"
+                new_filename = os.path.splitext(image)[0] + f"_{i}.jpg" #확장자 전까지의 파일이름 + "_{i}.jpg"
                 cv2.imwrite( #저장
                     os.path.join(subfolder, new_filename), #저장할 파일 경로
                     augmented["image"],#저장할 이미지 
@@ -94,7 +94,7 @@ def data_distribution(dataset, path: str) -> dict:
     Returns a dictionary with the distribution of each class in the dataset.
     """
     class_counts = {
-        cls: len(fnmatch.filter(os.listdir(f"{path}/{cls}"), "*.png"))
+        cls: len(fnmatch.filter(os.listdir(f"{path}/{cls}"), "*.jpg"))
         for cls in dataset.class_to_idx.keys()
     }
     return class_counts
